@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  web:
+    image: nginx:latest
+    volumes:
+      - ./docker/nginx/sites/default.conf:/etc/nginx/conf.d/nginx.conf
+      - ./app:/var/www/html/app
+    ports:
+      - 80:80
+
+  php:
+    build:
+      context: ./docker/php
+      args:
+        uid: ${UID}
+        user: ${USER}
+    volumes:
+      - ./app:/var/www/html/app
+      - ./docker/dotfiles/.bashrc:/home/${USER}/.bashrc
+      - ./docker/dotfiles/.bash_aliases:/home/${USER}/.bash_aliases
+
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/logs:/var/log/mysql
+    ports:
+      - 3306:3306
+
