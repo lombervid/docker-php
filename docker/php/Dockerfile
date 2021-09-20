@@ -3,13 +3,17 @@ FROM php:fpm
 ARG uid
 ARG user
 
-RUN docker-php-ext-install pdo pdo_mysql
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN apt-get update && apt-get install -y \
+        unzip \
+    && install-php-extensions \
+        pdo_mysql \
+        xdebug \
+        @composer
 
-
-# Install Composer
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+# Use the default development configuration
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 # Create system user to run Composer and Artisan Commands
 RUN useradd -G www-data,root -u $uid -d /home/$user -s $(which bash) $user

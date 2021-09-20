@@ -13,12 +13,12 @@ services:
     build:
       context: ./docker/php
       args:
-        uid: ${UID}
-        user: ${USER}
+        uid: ${DOCKER_UID}
+        user: ${DOCKER_USER}
     volumes:
       - ./app:/var/www/html/app
-      - ./docker/dotfiles/.bashrc:/home/${USER}/.bashrc
-      - ./docker/dotfiles/.bash_aliases:/home/${USER}/.bash_aliases
+      - ./docker/dotfiles/.bashrc:/home/${DOCKER_USER}/.bashrc
+      - ./docker/dotfiles/.bash_aliases:/home/${DOCKER_USER}/.bash_aliases
 
   db:
     image: mariadb:latest
@@ -28,8 +28,8 @@ services:
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
     volumes:
-      - ./docker/mysql/data:/var/lib/mysql
-      - ./docker/mysql/logs:/var/log/mysql
+      - ./data/mysql/data:/var/lib/mysql
+      - ./data/mysql/logs:/var/log/mysql
     ports:
       - 3306:3306
 
